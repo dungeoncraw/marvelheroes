@@ -1,26 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './styles/App.css';
 
-function App() {
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
+import { Routes } from './constants/routes';
+import HeroesSearch from './components/HeroesSearch';
+import HeroInfo from './components/HeroInfo';
+import About from './components/About';
+import AppLayout from './layout/Layout';
+
+const App = React.memo(() => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AppLayout>
+        <Switch>
+          <Route exact path={Routes.Home} component={HeroesSearch} />
+          <Route exact path={Routes.Detail} component={HeroInfo} />
+          <Route exact path={Routes.About} component={About} />
+        </Switch>
+      </AppLayout>
+    </Router>
   );
-}
+})
 
 export default App;
