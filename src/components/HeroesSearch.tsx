@@ -24,7 +24,7 @@ const HeroesSearch = React.memo((_: Props) => {
     React.useEffect(() => {
         dispatch(fetchHeroListRequest(search));
         updateSearch(search)
-    }, [search]);
+    }, [search, dispatch]);
     return (<span>HeroSearch</span>)
 });
 

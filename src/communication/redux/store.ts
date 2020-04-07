@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import { fork, all } from "redux-saga/effects";
 import createSagaMiddleware from 'redux-saga';
 import { HeroListState } from "../store/heroes/types";
-import { notification } from "antd";
 import heroListSaga from "../store/heroes/saga";
 import { heroListReducer } from "../store/heroes/reducer";
 
@@ -19,9 +18,7 @@ export function createReduxStore(): Store<any> {
   });
   /* eslint-disable no-underscore-dangle */
   const composeEnhancers = window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
-  const sagaMiddleware = createSagaMiddleware({
-    onError: handleError,
-  });
+  const sagaMiddleware = createSagaMiddleware();
   let middleware = [sagaMiddleware, thunk];
 
   const store = createStore(
@@ -31,6 +28,3 @@ export function createReduxStore(): Store<any> {
   sagaMiddleware.run(rootSaga);
   return store;
 }
-const handleError = (error: Error) => {
-  notification.error({message: error.message});
-};
