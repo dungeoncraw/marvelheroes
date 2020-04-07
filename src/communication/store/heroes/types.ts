@@ -24,7 +24,7 @@ export type HeroResource = {
     }
   ];
 };
-export type HeroesInfo = {
+export type HeroInfo = {
   id: number;
   name: string;
   description: string;
@@ -50,7 +50,7 @@ export interface HeroesList {
   limit: number;
   total: number;
   count: number;
-  results: HeroesInfo[];
+  results: HeroInfo[];
 }
 
 export interface HeroListState {
