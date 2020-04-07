@@ -24,7 +24,7 @@ const AboutComponent = () => {
                         dataSource={dataSource}
                         renderItem={item => (
                             <List.Item>
-                                <a href={item.url} target="_blank">
+                                <a href={item.url} target="_blank" rel="noopener noreferrer">
                                     {item.name}
                                 </a>
                             </List.Item>

@@ -1,6 +1,6 @@
 import { OrderByEnum } from '../../../constants/enums';
 
-export const enum HeroListActionTypes {
+export enum HeroListActionTypes {
     FETCH_HERO_LIST_REQUEST = '@@heroList/FETCH_HERO_LIST_REQUEST',
     FETCH_HERO_LIST_REQUEST_SUCCESS = '@@heroList/FETCH_HERO_LIST_REQUEST_SUCCESS',
     FETCH_HERO_LIST_REQUEST_ERROR = '@@heroList/FETCH_HERO_LIST_REQUEST_ERROR',
@@ -9,8 +9,8 @@ export interface HeroListParam {
     limit: number;
     offset: number;
     orderBy: OrderByEnum;
-    nameStartsWith: string;
-    name: string;
+    nameStartsWith?: string;
+    name?: string;
 }
 
 export interface HeroesList {

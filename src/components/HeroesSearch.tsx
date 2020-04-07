@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { fetchHeroListRequest } from '../communication/store/heroes/actions';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { StoreState } from '../communication/redux/store';
-import { AnyAction, Dispatch } from 'redux';
 import { HeroListParam, HeroesList } from '../communication/store/heroes/types';
+import { OrderByEnum } from '../constants/enums';
 
 type PropsFromDispatch = {
     fetchHeroListRequest: typeof fetchHeroListRequest
@@ -17,8 +17,15 @@ type PropsFromState = {
 
 type Props = PropsFromDispatch & PropsFromState & RouteComponentProps<{}>;
 
-const HeroesSearch = React.memo((props: Props) => {
-    return (<span>a</span>)
+const HeroesSearch = React.memo((_: Props) => {
+    const [search, updateSearch] = useState<HeroListParam>({limit: 10, offset: 1, orderBy: OrderByEnum.NAME_ASC});
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        dispatch(fetchHeroListRequest(search));
+        updateSearch(search)
+    }, [search]);
+    return (<span>HeroSearch</span>)
 });
 
 const mapStateToProps = ({ heroListReducer }: StoreState) => ({ 
@@ -26,8 +33,4 @@ const mapStateToProps = ({ heroListReducer }: StoreState) => ({
     loading: heroListReducer.loading
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => ({
-    fetchHeroListRequest: (param: HeroListParam) => dispatch(fetchHeroListRequest(param)),
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HeroesSearch));
+export default withRouter(connect(mapStateToProps)(HeroesSearch));

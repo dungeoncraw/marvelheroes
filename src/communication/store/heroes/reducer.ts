@@ -3,7 +3,8 @@ import { HeroListState, HeroListActionTypes } from './types';
 
 export const initialState: HeroListState = {
     error: null,
-    loading: false
+    loading: false,
+    list: []
 };
 
 const reducer: Reducer<HeroListState> = (state = initialState, action) => {
@@ -22,4 +23,5 @@ const reducer: Reducer<HeroListState> = (state = initialState, action) => {
         }
     }
 };
+
 export { reducer as heroListReducer };

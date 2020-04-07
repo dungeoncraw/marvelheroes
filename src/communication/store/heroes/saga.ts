@@ -1,12 +1,11 @@
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
-
 import heroesService from './service';
 import { HeroListActionTypes } from './types';
 import { getApiErrorContext } from '../../utils';
 import { notification } from 'antd';
 import { fetchHeroListRequest, fetchHeroListSuccess, fetchHeroListError } from './actions';
 
-export function* handleFetchHeroListRequest(action: ReturnType<typeof fetchHeroListRequest>) {
+function* handleFetchHeroListRequest(action: ReturnType<typeof fetchHeroListRequest>) {
   try {
     const res = yield call(heroesService.fetchHeroList, action.payload);
     yield put(fetchHeroListSuccess(res.data));
