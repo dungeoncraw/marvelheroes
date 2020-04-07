@@ -8,7 +8,7 @@ import { fetchHeroListRequest, fetchHeroListSuccess, fetchHeroListError } from '
 function* handleFetchHeroListRequest(action: ReturnType<typeof fetchHeroListRequest>) {
   try {
     const res = yield call(heroesService.fetchHeroList, action.payload);
-    yield put(fetchHeroListSuccess(res.data));
+    yield put(fetchHeroListSuccess(res.data.data));
   } catch (err) {
     const erroMessage = getApiErrorContext(err);
     notification.error({message: erroMessage})

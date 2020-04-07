@@ -20,7 +20,9 @@ const AppLayout = React.memo((props: Props) => {
             <Content style={{ margin: '0 16px' }}>
                 {props.children}
             </Content>
-            <Footer style={{ textAlign: 'center' }}>Marvel Hero List ©2020 Created by TNAscimento</Footer>
+            <Footer style={{ textAlign: 'center' }}>
+              Marvel Hero List ©2020 Created by TNAscimento 
+              <a href="http://marvel.com">Data provided by Marvel. © 2020 MARVEL</a></Footer>
           </Layout>
         </Layout>
       );

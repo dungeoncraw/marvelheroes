@@ -3,14 +3,13 @@ import { HeroListState, HeroListActionTypes } from './types';
 
 export const initialState: HeroListState = {
     error: null,
-    loading: false,
-    list: []
+    loading: false
 };
 
 const reducer: Reducer<HeroListState> = (state = initialState, action) => {
     switch (action.type) {
         case HeroListActionTypes.FETCH_HERO_LIST_REQUEST: {
-            return { ...state, loading: true };
+            return { ...state, loading: true, list: undefined };
         }
         case HeroListActionTypes.FETCH_HERO_LIST_REQUEST_SUCCESS: {
             return { ...state, loading: false, list: action.payload };

@@ -1,0 +1,15 @@
+.hero-list .hero-card img{
+    height: 300px;
+}
+.hero-list .hero-card {
+    background-color: #e23636;
+}
+
+.hero-list .hero-card .ant-card-actions > li {
+    margin: 0px;
+}
+
+.hero-list .hero-pagination { 
+    margin-top: 2rem;
+    float: right;
+}

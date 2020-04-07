@@ -2,3 +2,6 @@
     color: #ffffff;
     padding: 10px;
 }
+.ant-layout-content {
+    margin: 16px 16px;
+}
