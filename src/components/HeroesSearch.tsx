@@ -24,11 +24,10 @@ const HeroesSearch = React.memo((props: Props) => {
     const [search, updateSearch] = useState<HeroListParam>({ limit: 12, offset: 1, orderBy: OrderByEnum.NAME_ASC });
     const dispatch = useDispatch();
     const updatePagination = (offsetPag: number, limitPag?: number) => {
-        updateSearch({ ...search, offset: (offsetPag - 1) * (limitPag || 1), limit: limitPag || 10 });
+        updateSearch({ ...search, offset: offsetPag, limit: limitPag || 10 });
     };
     React.useEffect(() => {
-        dispatch(fetchHeroListRequest(search));
-        updateSearch(search)
+        dispatch(fetchHeroListRequest({...search, offset: (search.offset - 1) * search.limit}));
     }, [search, dispatch]);
     return (
         <div className="hero-list">
@@ -53,7 +52,7 @@ const HeroesSearch = React.memo((props: Props) => {
                             loading={loading}
                             cover={<img alt={hero.name} src={`${hero.thumbnail.path}.${hero.thumbnail.extension}`} />}
                             actions={[
-                                <Button type="primary" block loading={loading}> View More</Button>
+                                <Button type="primary" className="default-btn" block loading={loading}> View More</Button>
                             ]}
                         >
                             <Title level={4}>{hero.name}</Title>
