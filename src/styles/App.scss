@@ -1,8 +1,11 @@
 @import '~antd/dist/antd';
 @import './Layout';
 @import './About';
-@import './HeroList';
+@import './Hero';
 
 .default-btn {
     background-color: #e23636;
+}
+.secondary-btn {
+    background-color: #368fe2;
 }
