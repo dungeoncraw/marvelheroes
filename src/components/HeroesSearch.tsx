@@ -13,6 +13,7 @@ import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons
 import Title from 'antd/lib/typography/Title';
 import { useVisible } from './hooks/custom';
 import { debounce } from 'lodash';
+import HeroDetail from './HeroDetail';
 
 type PropsFromDispatch = {
     fetchHeroListRequest: typeof fetchHeroListRequest
@@ -41,13 +42,19 @@ const HeroesSearch = React.memo((props: Props) => {
     const debounceName = useRef(debounce(
         (heroName: string) =>
             exactlySearch ?
-            updateSearch({ ...search, name: heroName, nameStartsWith: undefined }) :
-            updateSearch({ ...search, nameStartsWith: heroName, name: undefined }),
+                updateSearch({ ...search, name: heroName, nameStartsWith: undefined }) :
+                updateSearch({ ...search, nameStartsWith: heroName, name: undefined }),
         500
     )).current;
 
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-        debounceName(e.target?.value);
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target?.value.length > 0) {
+            debounceName(e.target?.value);
+        } else {
+            clearSearch();
+        }
+    }
+
 
     const clearSearch = () => updateSearch(defaultSearch);
     const handleExactly = () => {
@@ -60,21 +67,22 @@ const HeroesSearch = React.memo((props: Props) => {
     React.useEffect(() => {
         dispatch(fetchHeroListRequest({ ...search, offset: (search.offset - 1) * search.limit }));
     }, [search, dispatch]);
-    
+
     React.useEffect(() => {
         exactlySearch ?
-        updateSearch({ ...search, name: search.nameStartsWith, nameStartsWith: undefined }) :
-        updateSearch({ ...search, nameStartsWith: search.name, name: undefined })
+            updateSearch({ ...search, name: search.nameStartsWith, nameStartsWith: undefined }) :
+            updateSearch({ ...search, nameStartsWith: search.name, name: undefined })
     }, [exactlySearch]);
 
     return (
         <div className="heroes">
-            <Row gutter={[12, 16]} className="bordered-search">
-                <Col span={3}>
+            <Row gutter={[12, 16]} className="bordered-search" justify="center">
+                <Col md={3} sm={8} xs={24}>
                     <Title level={4}>Hero name</Title>
                 </Col>
-                <Col span={15}>
+                <Col md={15} sm={8} xs={24}>
                     <Input
+                        id="name-hero"
                         placeholder="Search hero name"
                         allowClear
                         onChange={handleNameChange}
@@ -82,10 +90,10 @@ const HeroesSearch = React.memo((props: Props) => {
                             <Checkbox checked={exactlySearch} onChange={handleExactly}>Exactly</Checkbox>
                         } />
                 </Col>
-                <Col span={5}>
+                <Col md={5} sm={8} xs={24}>
                     <Select
                         showSearch
-                        style={{ width: 200 }}
+                        className="select-100"
                         placeholder="Order by"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
@@ -109,8 +117,8 @@ const HeroesSearch = React.memo((props: Props) => {
             </Row>
             <div className="hero-list">
                 <Row gutter={[16, 24]} justify="center">
-                    {loading &&
-                        <Col span={6}>
+                    {loading && [1, 2, 3, 4].map((_: number, index: number) =>
+                        <Col lg={6} xs={24} sm={8} key={index}>
                             <Card
                                 loading={loading}
                                 actions={[
@@ -120,9 +128,9 @@ const HeroesSearch = React.memo((props: Props) => {
                                 <Skeleton avatar active />
                             </Card>
                         </Col>
-                    }
+                    )}
                     {heroList?.results?.map((hero: HeroInfo, key: number) => (
-                        <Col span={6} key={`col-${key}`}>
+                        <Col lg={6} xs={24} sm={8} key={`col-${key}`}>
                             <Card
                                 className="hero-card"
                                 key={`card-${key}`}
@@ -156,14 +164,21 @@ const HeroesSearch = React.memo((props: Props) => {
                         />}
                 </Row>
                 <Modal
+                    title="Hero info"
                     visible={visibility.value}
                     onCancel={visibility.onClick}
                     onOk={visibility.onClick}
                     className="hero-detail"
                     okText="Ok"
+                    footer={[
+                        <Button key="submit" type="primary" loading={loading} onClick={visibility.onClick}>
+                            Ok
+                        </Button>
+                    ]}
                 >
-                    <span>{hero?.name}</span>
+                    <HeroDetail hero={hero}/>
                 </Modal>
+
                 {heroList?.results?.length &&
                     <Pagination
                         className="hero-pagination"
