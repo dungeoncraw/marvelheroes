@@ -4,6 +4,9 @@ export enum HeroListActionTypes {
   FETCH_HERO_LIST_REQUEST = "@@heroList/FETCH_HERO_LIST_REQUEST",
   FETCH_HERO_LIST_REQUEST_SUCCESS = "@@heroList/FETCH_HERO_LIST_REQUEST_SUCCESS",
   FETCH_HERO_LIST_REQUEST_ERROR = "@@heroList/FETCH_HERO_LIST_REQUEST_ERROR",
+  UPDATE_HERO_LIST_REQUEST = "@@heroList/UPDATE_HERO_LIST_REQUEST",
+  UPDATE_HERO_LIST_REQUEST_SUCCESS = "@@heroList/UPDATE_HERO_LIST_REQUEST_SUCCESS",
+  UPDATE_HERO_LIST_REQUEST_ERROR = "@@heroList/UPDATE_HERO_LIST_REQUEST_ERROR",
 }
 export interface HeroListParam {
   limit: number;
@@ -55,6 +58,7 @@ export interface HeroesList {
 
 export interface HeroListState {
   readonly loading: boolean;
+  readonly updating: boolean;
   readonly list?: HeroesList;
   readonly error: string | null;
 }

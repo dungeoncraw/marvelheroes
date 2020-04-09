@@ -1,19 +1,15 @@
-import React, { useState, useRef } from 'react';
-import { fetchHeroListRequest } from '../communication/store/heroes/actions';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-import { StoreState } from '../communication/redux/store';
-import { HeroListParam, HeroesList, HeroInfo } from '../communication/store/heroes/types';
-import { OrderByEnum } from '../constants/enums';
-import {
-    Row, Col, Card, Button, Pagination, Skeleton, Modal, Input,
-    Checkbox, Select, Result
-} from 'antd';
 import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import { Button, Card, Checkbox, Col, Input, Pagination, Result, Row, Select, Skeleton } from 'antd';
 import Title from 'antd/lib/typography/Title';
-import { useVisible } from './hooks/custom';
-import { debounce } from 'lodash';
+import React, { useState } from 'react';
+import { connect, useDispatch } from 'react-redux';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { StoreState } from '../communication/redux/store';
+import { fetchHeroListRequest } from '../communication/store/heroes/actions';
+import { HeroesList, HeroInfo, HeroListParam } from '../communication/store/heroes/types';
+import { OrderByEnum } from '../constants/enums';
 import HeroDetail from './HeroDetail';
+import { useDebounce, useVisible } from './hooks/custom';
 
 type PropsFromDispatch = {
     fetchHeroListRequest: typeof fetchHeroListRequest
@@ -30,33 +26,33 @@ const HeroesSearch = React.memo((props: Props) => {
     const { heroList, loading } = props;
     const defaultSearch = { limit: 12, offset: 1, orderBy: OrderByEnum.NAME_ASC }
     const [search, updateSearch] = useState<HeroListParam>(defaultSearch);
-
     const [hero, setHero] = useState<HeroInfo | undefined>();
     const [exactlySearch, setExactlySearch] = useState<boolean>(false);
+    const [heroName, setHeroName] = useState<string>();
+
     const dispatch = useDispatch();
     const visibility = useVisible(false);
 
     const updatePagination = (offsetPag: number, limitPag?: number) => {
         updateSearch({ ...search, offset: offsetPag, limit: limitPag || 10 });
     };
-    const debounceName = useRef(debounce(
-        (heroName: string) =>
-            exactlySearch ?
-                updateSearch({ ...search, name: heroName, nameStartsWith: undefined }) :
-                updateSearch({ ...search, nameStartsWith: heroName, name: undefined }),
-        500
-    )).current;
-
+    const debounceSearchName = useDebounce(heroName, 500);
+    
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target?.value.length > 0) {
-            debounceName(e.target?.value);
+            setHeroName(e.target?.value);
         } else {
             clearSearch();
         }
     }
+    const handleUpdateOrder = (value: OrderByEnum) => {
+        updateSearch({...search, orderBy: value});
+    }
 
-
-    const clearSearch = () => updateSearch(defaultSearch);
+    const clearSearch = () => {
+        setHeroName(undefined);
+        updateSearch(defaultSearch);
+    };
     const handleExactly = () => {
         setExactlySearch(!exactlySearch);
     };
@@ -64,6 +60,14 @@ const HeroesSearch = React.memo((props: Props) => {
         setHero(heroData);
         visibility.onClick();
     }
+
+    React.useEffect(() => {
+        if (debounceSearchName) {
+            exactlySearch ?
+                updateSearch({ ...search, name: heroName, nameStartsWith: undefined }) :
+                updateSearch({ ...search, nameStartsWith: heroName, name: undefined });
+        }
+    }, [debounceSearchName]);
     React.useEffect(() => {
         dispatch(fetchHeroListRequest({ ...search, offset: (search.offset - 1) * search.limit }));
     }, [search, dispatch]);
@@ -86,6 +90,7 @@ const HeroesSearch = React.memo((props: Props) => {
                         placeholder="Search hero name"
                         allowClear
                         onChange={handleNameChange}
+                        value={heroName}
                         addonAfter={
                             <Checkbox checked={exactlySearch} onChange={handleExactly}>Exactly</Checkbox>
                         } />
@@ -96,6 +101,8 @@ const HeroesSearch = React.memo((props: Props) => {
                         className="select-100"
                         placeholder="Order by"
                         optionFilterProp="children"
+                        defaultValue={OrderByEnum.NAME_ASC}
+                        onChange={handleUpdateOrder}
                         filterOption={(input, option) =>
                             option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }
@@ -157,32 +164,17 @@ const HeroesSearch = React.memo((props: Props) => {
                             status="warning"
                             title="No hero found using provided parameters. Try again."
                             extra={
-                                <Button type="primary" key="console" onClick={clearSearch}>
+                                <Button type="primary" key="clear" onClick={clearSearch}>
                                     Clear
                         </Button>
                             }
                         />}
                 </Row>
-                <Modal
-                    title="Hero info"
-                    visible={visibility.value}
-                    onCancel={visibility.onClick}
-                    onOk={visibility.onClick}
-                    className="hero-detail"
-                    okText="Ok"
-                    footer={[
-                        <Button key="submit" type="primary" loading={loading} onClick={visibility.onClick}>
-                            Ok
-                        </Button>
-                    ]}
-                >
-                    <HeroDetail hero={hero}/>
-                </Modal>
-
-                {heroList?.results?.length &&
+                <HeroDetail hero={hero} visible={visibility.value} setVisible={visibility.onChange} />
+                {((heroList?.results?.length || 0 ) > 0) &&
                     <Pagination
                         className="hero-pagination"
-                        total={heroList.total}
+                        total={heroList?.total}
                         showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
                         pageSize={search.limit}
                         defaultCurrent={search.offset}
@@ -194,7 +186,7 @@ const HeroesSearch = React.memo((props: Props) => {
 
 const mapStateToProps = ({ heroListReducer }: StoreState) => ({
     heroList: heroListReducer.list,
-    loading: heroListReducer.loading
+    loading: heroListReducer.loading,
 });
 
 export default withRouter(connect(mapStateToProps)(HeroesSearch));
